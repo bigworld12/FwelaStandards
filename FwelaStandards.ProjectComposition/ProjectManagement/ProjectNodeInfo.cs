@@ -107,10 +107,10 @@ namespace FwelaStandards.ProjectComposition
 
                                     //void NewItemPropertyChanged(object senderItem, PropertyChangedEventArgs e)
                                     //{
-                                    //    if (senderList is IList<T> copyList && senderItem is T component && e.HasPropertyChanged(nameof(component.NodeInfo)) && !(component.NodeInfo is null))
+                                    //    if (senderList is IList<T> copyList && senderItem is T Part && e.HasPropertyChanged(nameof(Part.NodeInfo)) && !(Part.NodeInfo is null))
                                     //    {
-                                    //        component.PropertyChanged -= NewItemPropertyChanged;
-                                    //        ChildrenAsList.Insert(args.NewStartingIndex + i, component.NodeInfo);
+                                    //        Part.PropertyChanged -= NewItemPropertyChanged;
+                                    //        ChildrenAsList.Insert(args.NewStartingIndex + i, Part.NodeInfo);
                                     //    }
                                     //}
                                     ////delay insert
@@ -140,10 +140,10 @@ namespace FwelaStandards.ProjectComposition
                                     nodeInfo = newItem.InitFromParent(this);
                                     //void NewItemPropertyChanged(object senderItem, PropertyChangedEventArgs e)
                                     //{
-                                    //    if (senderList is IList<T> copyList && senderItem is T component && e.HasPropertyChanged(nameof(component.NodeInfo)) && !(component.NodeInfo is null))
+                                    //    if (senderList is IList<T> copyList && senderItem is T Part && e.HasPropertyChanged(nameof(Part.NodeInfo)) && !(Part.NodeInfo is null))
                                     //    {
-                                    //        component.PropertyChanged -= NewItemPropertyChanged;
-                                    //        ChildrenAsList[args.NewStartingIndex + i] = component.NodeInfo;
+                                    //        Part.PropertyChanged -= NewItemPropertyChanged;
+                                    //        ChildrenAsList[args.NewStartingIndex + i] = Part.NodeInfo;
                                     //    }
                                     //}
                                     //newItem.PropertyChanged += NewItemPropertyChanged;
@@ -186,44 +186,44 @@ namespace FwelaStandards.ProjectComposition
             childInfo.Name = name;
             Children[name] = childInfo;
         }
-        public void RegisterChildPart<T>(T childComponent, string name, bool raisePropertyChangedOnComponent = true) where T : IProjectPart
+        public void RegisterChildPart<T>(T childPart, string name, bool raisePropertyChangedOnPart = true) where T : IProjectPart
         {
-            childComponent.InitFromParent(this);
-            if (childComponent.NodeInfo is null)
+            childPart.InitFromParent(this);
+            if (childPart.NodeInfo is null)
             {
-                throw new InvalidOperationException("Filed to initialize child component");
+                throw new InvalidOperationException("Filed to initialize child Part");
             }
-            RegisterChildPart(childComponent.NodeInfo, name);
-            if (raisePropertyChangedOnComponent)
+            RegisterChildPart(childPart.NodeInfo, name);
+            if (raisePropertyChangedOnPart)
             {
                 Part.RaisePropertyChanged(name);
             }
         }
 
-        public void RegisterListChild<T>(T childComponent) where T : IProjectPart
+        public void RegisterListChild<T>(T childPart) where T : IProjectPart
         {
-            childComponent.InitFromParent(this);
-            if (childComponent.NodeInfo is null)
+            childPart.InitFromParent(this);
+            if (childPart.NodeInfo is null)
             {
-                throw new InvalidOperationException("Filed to initialize component");
+                throw new InvalidOperationException("Filed to initialize Part");
             }
-            ChildrenAsList.Add(childComponent.NodeInfo);
+            ChildrenAsList.Add(childPart.NodeInfo);
         }
-        public void RegisterListChild<T>(IEnumerable<T> childrenComponents) where T : IProjectPart
+        public void RegisterListChild<T>(IEnumerable<T> childrenParts) where T : IProjectPart
         {
-            foreach (var item in childrenComponents)
+            foreach (var item in childrenParts)
             {
                 RegisterListChild(item);
             }
         }
-        public ProjectNodeInfo(IProjectPart component, ProjectNodeInfo? parent = null)
+        public ProjectNodeInfo(IProjectPart Part, ProjectNodeInfo? parent = null)
         {
-            Part = component;
+            Part = Part;
             Children = new NodeDictionaryList(this);
             DependencyInfo = new ProjectPartDependency(this);
             PropertyChanged += ProjectNodeInfo_PropertyChanged;
             Children.CollectionChanged += Children_CollectionChanged;
-            component.PropertyChanged += Component_PropertyChanged;
+            Part.PropertyChanged += Part_PropertyChanged;
             if (parent is null)
             {
                 Name = "*";
@@ -250,7 +250,7 @@ namespace FwelaStandards.ProjectComposition
             }
         }
 
-        private void Component_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Part_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -287,7 +287,7 @@ namespace FwelaStandards.ProjectComposition
         /// </summary>
         /// <param name="stopAt"></param>
         /// <param name="prop"></param>
-        /// <param name="useBracketsForComponents">set to false to use the <see cref="WalkPathDownFrom"/> method</param>
+        /// <param name="useBracketsForParts">set to false to use the <see cref="WalkPathDownFrom"/> method</param>
         /// <returns></returns>
         public string ResolvePathUntil(ProjectNodeInfo stopAt, string prop = "")
         {

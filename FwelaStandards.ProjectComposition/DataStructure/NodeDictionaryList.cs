@@ -51,15 +51,15 @@ namespace FwelaStandards.ProjectComposition
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is IProjectPart component)
+            if (sender is IProjectPart Part)
             {
-                ItemsComponentPropertyChanged?.Invoke(Owner, component, e);
+                ItemsPartPropertyChanged?.Invoke(Owner, Part, e);
             }
         }
         /// <summary>
-        /// Occurs when the child component property changes
+        /// Occurs when the child Part property changes
         /// </summary>
-        public event NodeListItemPropertyChanged? ItemsComponentPropertyChanged;
+        public event NodeListItemPropertyChanged? ItemsPartPropertyChanged;
     }
 
 }

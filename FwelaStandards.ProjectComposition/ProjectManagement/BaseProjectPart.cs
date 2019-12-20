@@ -19,12 +19,12 @@ namespace FwelaStandards.ProjectComposition
         /// </summary>
         public UnitSystems GetUnitSystem()
         {
-            var pd = NodeInfo?.GetRootComponent().Details;
+            var pd = NodeInfo?.GetRootPart().Details;
             if (pd is null)
                 return UnitSystems.Imperial;
             return pd.UnitSystem;
         }*/
-        public IRootProjectPart? GetRootComponent()
+        public IRootProjectPart? GetRootPart()
         {
             return (IRootProjectPart?)NodeInfo?.Part;
         }
