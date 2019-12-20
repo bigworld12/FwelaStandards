@@ -3,7 +3,7 @@ using System;
 
 namespace FwelaStandards.ProjectComposition
 {
-    public class BaseProjectPart : ModelBase, IProjectPart
+    public class BaseProjectPart : ValidatableModelBase, IProjectPart
     {
         public IProjectPart? this[string index]
         {
@@ -14,16 +14,7 @@ namespace FwelaStandards.ProjectComposition
 
         public string? Name => NodeInfo?.Name;
 
-        /*/// <summary>
-        /// Don't bind to this
-        /// </summary>
-        public UnitSystems GetUnitSystem()
-        {
-            var pd = NodeInfo?.GetRootPart().Details;
-            if (pd is null)
-                return UnitSystems.Imperial;
-            return pd.UnitSystem;
-        }*/
+        
         public IRootProjectPart? GetRootPart()
         {
             return (IRootProjectPart?)NodeInfo?.Part;
@@ -46,15 +37,19 @@ namespace FwelaStandards.ProjectComposition
 
         public T GetDirectPropertyValue<T>(string propName) where T : class
         {
+            return (T)GetDirectPropertyValue(propName);
+        }
+
+        public object GetDirectPropertyValue(string propName)
+        {
             if (IsPropertyRegistered(propName))
             {
-                return GetValue<T>(propName);
+                return GetValue(propName);
             }
             else
             {
-                return (T)GetType().GetProperty(propName).GetValue(this);
+                return GetType().GetProperty(propName).GetValue(this);
             }
-
         }
     }
 
