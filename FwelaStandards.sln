@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29505.145
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwelaStandards.ProjectComposition", "FwelaStandards.ProjectComposition\FwelaStandards.ProjectComposition.csproj", "{529D7B2A-B2E5-463E-82EA-DD714000F6BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwelaStandards.ProjectComposition.Tests", "FwelaStandards.ProjectComposition.Tests\FwelaStandards.ProjectComposition.Tests.csproj", "{696776AF-991C-4419-8D45-FD019A37C9EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{529D7B2A-B2E5-463E-82EA-DD714000F6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529D7B2A-B2E5-463E-82EA-DD714000F6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529D7B2A-B2E5-463E-82EA-DD714000F6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{529D7B2A-B2E5-463E-82EA-DD714000F6BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{696776AF-991C-4419-8D45-FD019A37C9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{696776AF-991C-4419-8D45-FD019A37C9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{696776AF-991C-4419-8D45-FD019A37C9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{696776AF-991C-4419-8D45-FD019A37C9EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E83B50D9-6ADC-4330-B5EB-68F3CA0C311E}
+	EndGlobalSection
+EndGlobal

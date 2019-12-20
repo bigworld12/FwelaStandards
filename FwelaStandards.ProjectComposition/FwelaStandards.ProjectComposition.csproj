@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>8</LangVersion>
+    <Authors>Ahmed Fwela</Authors>
+    <Description>just a group of classes that i am too lazy to rewrite, don't use these unless you know what you are doing</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>fwela standards project composition</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Catel.Core" Version="5.12.0-beta0025" />
+    <PackageReference Include="Catel.Fody" Version="4.3.0" />
+  </ItemGroup>
+  
+
+</Project>
