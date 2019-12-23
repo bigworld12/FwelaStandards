@@ -8,6 +8,11 @@
     <Description>just a group of classes that i am too lazy to rewrite, don't use these unless you know what you are doing</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>fwela standards project composition</PackageTags>
+    <PackageProjectUrl>https://github.com/bigworld12/FwelaStandards</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bigworld12/FwelaStandards</RepositoryUrl>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
