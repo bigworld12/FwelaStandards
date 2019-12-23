@@ -9,6 +9,7 @@ namespace FwelaStandards.ProjectComposition
     }
     public interface ICanGetValueFromPropName
     {
+        object GetDirectPropertyValue(string propName);
         T? GetDirectPropertyValue<T>(string propName) where T : class;
     }
     public interface IProjectPart : ICanRaisePropertyChanged, ICanGetValueFromPropName, IAdvancedNotifyPropertyChanged

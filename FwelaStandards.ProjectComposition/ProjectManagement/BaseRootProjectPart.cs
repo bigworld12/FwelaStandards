@@ -7,5 +7,6 @@ namespace FwelaStandards.ProjectComposition
 {
     public class BaseRootProjectPart : BaseProjectPart, IRootProjectPart
     {
+        
     }
 }
