@@ -21,7 +21,7 @@ namespace FwelaStandards.ProjectComposition.Tests
                 }
             };
 
-            var rootNode = root.InitFromParent(null);
+            var rootNode = root.InitFromParent(null,null);
             Assert.NotNull(root.PartA);
             Assert.Equal(0, root.ValueSum);
             var pANode = rootNode.GetChild(nameof(root.PartA));

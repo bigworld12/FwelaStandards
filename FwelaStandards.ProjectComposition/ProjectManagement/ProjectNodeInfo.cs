@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,7 +16,7 @@ using System.Text.RegularExpressions;
 namespace FwelaStandards.ProjectComposition
 {
     public class ProjectNodeInfo : ModelBase
-    {   
+    {
         public IProjectPart Part { get; }
         public T GetPartAs<T>() where T : IProjectPart
         {
@@ -37,7 +38,7 @@ namespace FwelaStandards.ProjectComposition
 
         public ProjectPartDependency DependencyInfo { get; }
 
-
+        public IEnumerable<ProjectNodeInfo> AllChildren => AsDictionary.Values.Concat(AsList);
 
         public ObservableCollection<T> ChildrenToObservableCollection<T>() where T : IProjectPart
         {
@@ -102,7 +103,7 @@ namespace FwelaStandards.ProjectComposition
                                 var nodeInfo = newItem.NodeInfo;
                                 if (nodeInfo is null)
                                 {
-                                    nodeInfo = newItem.InitFromParent(this);
+                                    nodeInfo = newItem.InitFromParent(this, (args.NewStartingIndex + i).TransformIndex());
                                     //after initializing node, rebuild relative tree ?
 
                                     //void NewItemPropertyChanged(object senderItem, PropertyChangedEventArgs e)
@@ -137,7 +138,7 @@ namespace FwelaStandards.ProjectComposition
                                 var nodeInfo = newItem.NodeInfo;
                                 if (nodeInfo is null)
                                 {
-                                    nodeInfo = newItem.InitFromParent(this);
+                                    nodeInfo = newItem.InitFromParent(this, (args.OldStartingIndex + i).TransformIndex());
                                     //void NewItemPropertyChanged(object senderItem, PropertyChangedEventArgs e)
                                     //{
                                     //    if (senderList is IList<T> copyList && senderItem is T Part && e.HasPropertyChanged(nameof(Part.NodeInfo)) && !(Part.NodeInfo is null))
@@ -174,26 +175,21 @@ namespace FwelaStandards.ProjectComposition
             return (T)Parent.Part;
         }
         public T GetChildPart<T>([CallerMemberName] string name = "") where T : IProjectPart
-        {   
+        {
             return (T)AsDictionary[name].Part;
         }
         public ProjectNodeInfo GetChild(string name)
         {
             return AsDictionary[name];
         }
-        public void RegisterChildPart(ProjectNodeInfo childInfo, string name)
-        {
-            childInfo.Name = name;
-            AsDictionary[name] = childInfo;
+        public void RegisterChildNode(ProjectNodeInfo childInfo)
+        {   
+            AsDictionary[childInfo.Name] = childInfo;
         }
         public void RegisterChildPart<T>(T childPart, string name, bool raisePropertyChangedOnPart = true) where T : IProjectPart
         {
-            childPart.InitFromParent(this);
-            if (childPart.NodeInfo is null)
-            {
-                throw new InvalidOperationException("Filed to initialize child Part");
-            }
-            RegisterChildPart(childPart.NodeInfo, name);
+            var cNI = childPart.InitFromParent(this,name);
+            RegisterChildNode(cNI);
             if (raisePropertyChangedOnPart)
             {
                 Part.RaisePropertyChanged(name);
@@ -202,12 +198,9 @@ namespace FwelaStandards.ProjectComposition
 
         public void RegisterListChild<T>(T childPart) where T : IProjectPart
         {
-            childPart.InitFromParent(this);
-            if (childPart.NodeInfo is null)
-            {
-                throw new InvalidOperationException("Filed to initialize Part");
-            }
-            AsList.Add(childPart.NodeInfo);
+            var cNI = childPart.InitFromParent(this, AsList.Count.TransformIndex());
+            
+            AsList.Add(cNI);
         }
         public void RegisterListChild<T>(IEnumerable<T> childrenParts) where T : IProjectPart
         {
@@ -216,18 +209,10 @@ namespace FwelaStandards.ProjectComposition
                 RegisterListChild(item);
             }
         }
-        public ProjectNodeInfo(IProjectPart part, ProjectNodeInfo? parent = null)
+        public ProjectNodeInfo(IProjectPart part, ProjectNodeInfo? parent = null, string? name = null)
         {
             Part = part;
-            AsDictionary = new NodeObservableDictionary(this);
-            AsList = new NodeObservableCollection(this);
-            DependencyInfo = new ProjectPartDependency(this);
-            PropertyChanged += ProjectNodeInfo_PropertyChanged;
-            
-            AsList.CollectionChanged += AsList_CollectionChanged;
-
-            Part.PropertyChanged += Part_PropertyChanged;
-            if (parent is null)
+            if (parent is null || name is null)
             {
                 Name = "*";
                 RootNode = this;
@@ -235,34 +220,54 @@ namespace FwelaStandards.ProjectComposition
             }
             else
             {
+                Name = name;
                 RootNode = parent.RootNode;
                 Parent = parent;
             }
+            CleanName = GetCleanName(Name);
+            FullPath = GetFullPath(Name, false);
+            CleanFullPath = GetFullPath(Name, true);
+
+            PropertyChanged += ProjectNodeInfo_PropertyChanged;
+
+            AsDictionary = new NodeObservableDictionary(this);
+            AsList = new NodeObservableCollection(this);
+            DependencyInfo = new ProjectPartDependency(this);
+
+            AsList.CollectionChanged += AsList_CollectionChanged;
         }
 
-        
+
 
         private void ProjectNodeInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            Console.WriteLine($"Entered Property Changed {e.PropertyName}");
             switch (e.PropertyName)
             {
                 case nameof(Name):
-                    
-                    RaisePropertyChanged(nameof(FullPath));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void Part_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(FullPath):
-                    foreach (var item in AsDictionary)
+                    if (e is AdvancedPropertyChangedEventArgs adv)
                     {
-                        item.Value.RaisePropertyChanged(nameof(FullPath));
+                        if (adv.IsOldValueMeaningful && adv.OldValue is string oldName)
+                        {
+                            CleanName = GetCleanName(Name);
+                            FullPath = GetFullPath(Name, false);
+                            CleanFullPath = GetFullPath(Name, true);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Old value was meaningless");
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Name is a registered property but it didn't raise advanced args");
+                    }
+                    break;
+                case nameof(FullPath):
+                    foreach (var item in AllChildren)
+                    {
+                        item.FullPath = GetFullPath(item.Name, false);
+                        item.CleanFullPath = GetFullPath(item.Name, true);
                     }
                     break;
                 default:
@@ -270,19 +275,40 @@ namespace FwelaStandards.ProjectComposition
             }
         }
 
+
+
         private void AsList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             //change children's paths based on collection changes
             for (int i = 0; i < AsList.Count; i++)
             {
-                AsList[i].Name = $"Item[{i}]";
+                AsList[i].Name = i.TransformIndex();
+            }
+        }
+        public bool IsListChild => Name.StartsWith("Item[");
+        public string Name { get; set; }
+        public string CleanName { get; private set; }
+
+        public static Regex ItemRegex = new Regex(@"Item\[[0-9]+\]", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static string GetCleanName(string name) => ItemRegex.Replace(name, ProjectPartDependency.ItemIndexer);
+
+
+        public string FullPath { get; private set; }
+        public string CleanFullPath { get; private set; }
+        public string GetFullPath(string name, bool isClean)
+        {
+            var n = isClean ? GetCleanName(name) : name;
+            if (Parent is ProjectNodeInfo p)
+            {
+                var fp = isClean ? p.CleanFullPath : p.FullPath;
+                return $"{fp}.{n}";
+            }
+            else
+            {
+                return n;
             }
         }
 
-        public string Name { get; set; } = "$null";
-        public static Regex ItemRegex = new Regex(@"Item\[[0-9]+\]", RegexOptions.Compiled | RegexOptions.Singleline);
-        public string GetCleanName() => ItemRegex.Replace(Name, ProjectPartDependency.ItemIndexer);
-        public string FullPath => ResolvePathUntilRoot();
         public string ResolvePathUntilRoot(string prop = "")
         {
             return ResolvePathUntil(RootNode, prop);

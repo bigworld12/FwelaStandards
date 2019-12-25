@@ -4,17 +4,21 @@ using System;
 namespace FwelaStandards.ProjectComposition
 {
     public class BaseProjectPart : ValidatableModelBase, IProjectPart
-    {   
+    {
+        public BaseProjectPart()
+        {
+            AutomaticallyValidateOnPropertyChanged = false;
+        }
         public IProjectPart? Parent { get; set; }
-        public ProjectNodeInfo? NodeInfo { get; set; }
+        public ProjectNodeInfo? NodeInfo { get; private set; }
         /// <summary>
         /// quick use for node info
         /// </summary>
         public ProjectNodeInfo NI => NodeInfo ?? throw new InvalidOperationException("Node info can't be used before initialization");
 
-        public ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode)
+        public ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode, string? name)
         {
-            NodeInfo = new ProjectNodeInfo(this, parentNode);
+            NodeInfo = new ProjectNodeInfo(this, parentNode, name);
             Parent = parentNode?.Part;
             RegisterAllChildren(NodeInfo);
             RegisterAllDeps(NodeInfo);

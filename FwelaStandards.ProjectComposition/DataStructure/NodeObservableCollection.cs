@@ -10,7 +10,7 @@ namespace FwelaStandards.ProjectComposition
         public ProjectNodeInfo Owner { get; }
         public NodeObservableCollection(ProjectNodeInfo owner)
         {
-            Owner = owner;            
+            Owner = owner;
         }
     }
 

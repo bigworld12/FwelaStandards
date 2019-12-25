@@ -62,7 +62,7 @@ namespace FwelaStandards.ProjectComposition
             //walk the node tree, if parent has path that references current path
             if (From.Parent is ProjectNodeInfo currentParent)
             {
-                currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.GetCleanName()}.{name}",true);
+                currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.CleanName}.{name}",true);
             }
         }
 

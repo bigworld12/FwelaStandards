@@ -16,13 +16,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.12.0" />
     <PackageReference Include="Catel.Fody" Version="4.3.0" />
-    <PackageReference Include="Catel.MVVM" Version="5.12.0" />
     <PackageReference Include="Fody" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Catel\src\Catel.Core\Catel.Core.csproj" />
   </ItemGroup>
   
 

@@ -9,7 +9,7 @@ namespace FwelaStandards.ProjectComposition.Tests
         public void Test1()
         {
             var root = new MockRootPart();
-            root.InitFromParent(null);
+            root.InitFromParent(null,null);
         }
     }
 }
