@@ -8,14 +8,13 @@ namespace FwelaStandards.ProjectComposition
         void RaisePropertyChanged(string propName);
     }
     public interface ICanGetValueFromPropName
-    {
-        object GetDirectPropertyValue(string propName);
+    {   
         T? GetDirectPropertyValue<T>(string propName) where T : class;
     }
     public interface IProjectPart : ICanRaisePropertyChanged, ICanGetValueFromPropName, IAdvancedNotifyPropertyChanged
     {
         ProjectNodeInfo? NodeInfo { get; } //equivalent to linked list node
-        string? Name { get; }
+        
         ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode);
         void RegisterAllDeps(ProjectNodeInfo nodeInfo);
         void RegisterAllChildren(ProjectNodeInfo nodeInfo);
@@ -24,6 +23,4 @@ namespace FwelaStandards.ProjectComposition
     public interface IRootProjectPart : IProjectPart
     {
     }
-    public delegate void NodeListItemPropertyChanged(ProjectNodeInfo list, IProjectPart item, PropertyChangedEventArgs args);
-
 }

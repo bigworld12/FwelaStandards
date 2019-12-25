@@ -15,7 +15,7 @@ using System.Text.RegularExpressions;
 namespace FwelaStandards.ProjectComposition
 {
     public class ProjectNodeInfo : ModelBase
-    {
+    {   
         public IProjectPart Part { get; }
         public T GetPartAs<T>() where T : IProjectPart
         {
@@ -31,13 +31,13 @@ namespace FwelaStandards.ProjectComposition
         }
         public ProjectNodeInfo RootNode { get; }
         public ProjectNodeInfo? Parent { get; set; }
-        /// <summary>
-        /// [Root.]A.B.Item[10].C.D
-        /// </summary>
-        public NodeDictionaryList Children { get; }
+
+        public NodeObservableDictionary AsDictionary { get; }
+        public NodeObservableCollection AsList { get; }
+
         public ProjectPartDependency DependencyInfo { get; }
 
-        public IMovableList<ProjectNodeInfo> ChildrenAsList => Children;
+
 
         public ObservableCollection<T> ChildrenToObservableCollection<T>() where T : IProjectPart
         {
@@ -47,7 +47,7 @@ namespace FwelaStandards.ProjectComposition
         }
         public void ChildrenToObservableCollection<T>(ObservableCollection<T> res) where T : IProjectPart
         {
-            res.AddRange(ChildrenAsList.Select(x => (T)x.Part));
+            res.AddRange(AsList.Select(x => (T)x.Part));
 
             void OriginalChanged(object sender, NotifyCollectionChangedEventArgs args)
             {
@@ -89,7 +89,7 @@ namespace FwelaStandards.ProjectComposition
             void CopyChanged(object senderList, NotifyCollectionChangedEventArgs args)
             {
 
-                Children.CollectionChanged -= OriginalChanged;
+                AsList.CollectionChanged -= OriginalChanged;
                 //modify Original
                 switch (args.Action)
                 {
@@ -117,17 +117,17 @@ namespace FwelaStandards.ProjectComposition
                                     //newItem.PropertyChanged += NewItemPropertyChanged;
                                 }
                                 //else
-                                ChildrenAsList.Insert(args.NewStartingIndex + i, nodeInfo);
+                                AsList.Insert(args.NewStartingIndex + i, nodeInfo);
                             }
                         if (args.OldItems != null)
                             for (int i = 0; i < args.OldItems.Count; i++)
                             {
                                 //var oldItem = (ProjectNodeInfo)args.OldItems[i];
-                                ChildrenAsList.RemoveAt(args.OldStartingIndex + i);
+                                AsList.RemoveAt(args.OldStartingIndex + i);
                             }
                         break;
                     case NotifyCollectionChangedAction.Move:
-                        ChildrenAsList.Move(args.OldStartingIndex, args.NewStartingIndex);
+                        AsList.Move(args.OldStartingIndex, args.NewStartingIndex);
                         break;
                     case NotifyCollectionChangedAction.Replace:
                         if (args.NewItems != null)
@@ -149,17 +149,17 @@ namespace FwelaStandards.ProjectComposition
                                     //newItem.PropertyChanged += NewItemPropertyChanged;
                                 }
                                 //else
-                                ChildrenAsList[args.OldStartingIndex + i] = nodeInfo;
+                                AsList[args.OldStartingIndex + i] = nodeInfo;
                             }
                         break;
                     case NotifyCollectionChangedAction.Reset:
-                        ChildrenAsList.Clear();
+                        AsList.Clear();
                         break;
                 }
-                Children.CollectionChanged += OriginalChanged;
+                AsList.CollectionChanged += OriginalChanged;
             }
 
-            Children.CollectionChanged += OriginalChanged;
+            AsList.CollectionChanged += OriginalChanged;
             res.CollectionChanged += CopyChanged;
         }
 
@@ -174,17 +174,17 @@ namespace FwelaStandards.ProjectComposition
             return (T)Parent.Part;
         }
         public T GetChildPart<T>([CallerMemberName] string name = "") where T : IProjectPart
-        {
-            return (T)Children[name].Part;
+        {   
+            return (T)AsDictionary[name].Part;
         }
         public ProjectNodeInfo GetChild(string name)
         {
-            return Children[name];
+            return AsDictionary[name];
         }
         public void RegisterChildPart(ProjectNodeInfo childInfo, string name)
         {
             childInfo.Name = name;
-            Children[name] = childInfo;
+            AsDictionary[name] = childInfo;
         }
         public void RegisterChildPart<T>(T childPart, string name, bool raisePropertyChangedOnPart = true) where T : IProjectPart
         {
@@ -207,7 +207,7 @@ namespace FwelaStandards.ProjectComposition
             {
                 throw new InvalidOperationException("Filed to initialize Part");
             }
-            ChildrenAsList.Add(childPart.NodeInfo);
+            AsList.Add(childPart.NodeInfo);
         }
         public void RegisterListChild<T>(IEnumerable<T> childrenParts) where T : IProjectPart
         {
@@ -219,10 +219,13 @@ namespace FwelaStandards.ProjectComposition
         public ProjectNodeInfo(IProjectPart part, ProjectNodeInfo? parent = null)
         {
             Part = part;
-            Children = new NodeDictionaryList(this);
+            AsDictionary = new NodeObservableDictionary(this);
+            AsList = new NodeObservableCollection(this);
             DependencyInfo = new ProjectPartDependency(this);
             PropertyChanged += ProjectNodeInfo_PropertyChanged;
-            Children.CollectionChanged += Children_CollectionChanged;
+            
+            AsList.CollectionChanged += AsList_CollectionChanged;
+
             Part.PropertyChanged += Part_PropertyChanged;
             if (parent is null)
             {
@@ -237,12 +240,14 @@ namespace FwelaStandards.ProjectComposition
             }
         }
 
+        
+
         private void ProjectNodeInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case nameof(Name):
-                    Part.RaisePropertyChanged(nameof(Part.Name));
+                    
                     RaisePropertyChanged(nameof(FullPath));
                     break;
                 default:
@@ -255,7 +260,7 @@ namespace FwelaStandards.ProjectComposition
             switch (e.PropertyName)
             {
                 case nameof(FullPath):
-                    foreach (var item in Children)
+                    foreach (var item in AsDictionary)
                     {
                         item.Value.RaisePropertyChanged(nameof(FullPath));
                     }
@@ -265,12 +270,12 @@ namespace FwelaStandards.ProjectComposition
             }
         }
 
-        private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void AsList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             //change children's paths based on collection changes
-            for (int i = 0; i < ChildrenAsList.Count; i++)
+            for (int i = 0; i < AsList.Count; i++)
             {
-                ChildrenAsList[i].Name = $"Item[{i}]";
+                AsList[i].Name = $"Item[{i}]";
             }
         }
 
@@ -319,7 +324,7 @@ namespace FwelaStandards.ProjectComposition
             for (int i = 0; i < splitPath.Length; i++)
             {
                 var subPath = splitPath[i];
-                current = current.Children[subPath];
+                current = current.AsDictionary[subPath];
             }
             return current;
         }
@@ -362,7 +367,7 @@ namespace FwelaStandards.ProjectComposition
             {
                 subActions.Add(item);
             }
-        }               
+        }
     }
 
 }

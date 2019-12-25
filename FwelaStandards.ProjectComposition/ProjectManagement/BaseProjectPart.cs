@@ -4,21 +4,14 @@ using System;
 namespace FwelaStandards.ProjectComposition
 {
     public class BaseProjectPart : ValidatableModelBase, IProjectPart
-    {
-        public IProjectPart? this[string index]
-        {
-            get { return NodeInfo?.GetChildPart<IProjectPart>(index); }
-        }
+    {   
         public IProjectPart? Parent { get; set; }
         public ProjectNodeInfo? NodeInfo { get; set; }
+        /// <summary>
+        /// quick use for node info
+        /// </summary>
+        public ProjectNodeInfo NI => NodeInfo ?? throw new InvalidOperationException("Node info can't be used before initialization");
 
-        public string? Name => NodeInfo?.Name;
-
-        
-        public IRootProjectPart? GetRootPart()
-        {
-            return (IRootProjectPart?)NodeInfo?.Part;
-        }
         public ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode)
         {
             NodeInfo = new ProjectNodeInfo(this, parentNode);
@@ -37,20 +30,10 @@ namespace FwelaStandards.ProjectComposition
 
         public T GetDirectPropertyValue<T>(string propName) where T : class
         {
-            return (T)GetDirectPropertyValue(propName);
+            return ObjectAdapter.GetMemberValue<T>(this, propName, out var res) ? res : throw new PropertyNotRegisteredException(propName, GetType());
         }
 
-        public object GetDirectPropertyValue(string propName)
-        {
-            if (IsPropertyRegistered(propName))
-            {
-                return GetValue(propName);
-            }
-            else
-            {
-                return GetType().GetProperty(propName).GetValue(this);
-            }
-        }
+
     }
 
 }

@@ -29,8 +29,8 @@ namespace FwelaStandards.ProjectComposition.Tests
             var actualPartB = new ListPartB();
             pA.ListOfB.Add(actualPartB);
             Assert.Single(pA.ListOfB);
-            Assert.Single(pANode.ChildrenAsList);
-            Assert.Same(pANode.ChildrenAsList[0], actualPartB.NodeInfo);
+            Assert.Single(pANode.AsList);
+            Assert.Same(pANode.AsList[0], actualPartB.NodeInfo);
             Assert.Same(pA.ListOfB[0], actualPartB);
             var actualC = new ListPartC();
             actualPartB.ListOfC.Add(actualC);

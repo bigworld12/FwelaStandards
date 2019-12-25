@@ -19,7 +19,7 @@ namespace FwelaStandards.ProjectComposition.Tests
             base.RegisterAllDeps(nodeInfo);
             nodeInfo.RegisterDependency(nodeInfo, $"{nameof(PartA)}.Item[].Item[].Item[].Value", nameof(ValueSum));            
         }
-        public PartAType? PartA => NodeInfo?.GetChildPart<PartAType>();
-        public int ValueSum => PartA?.ListOfB.Sum(x => x.ListOfC.Sum(y => y.ListOfD.Sum(z => z.Value))) ?? 0;
+        public PartAType PartA => NI.GetChildPart<PartAType>();
+        public int ValueSum => PartA.ListOfB.Sum(x => x.ListOfC.Sum(y => y.ListOfD.Sum(z => z.Value)));
     }
 }

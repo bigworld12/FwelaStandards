@@ -6,6 +6,6 @@ namespace FwelaStandards
 {
     public static class Extentions
     {
-        public static string TransformIndex(this int index) => $"Item[{index}]";
+        public static string TransformIndex(this int index) => $"Item[{index}]" ;
     }
 }
