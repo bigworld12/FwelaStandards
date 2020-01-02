@@ -9,7 +9,7 @@
 
   <ItemGroup>
    
-    <PackageReference Include="Catel.Fody" Version="4.3.0" />
+    <PackageReference Include="Catel.Fody" Version="4.4.0-alpha0078" />
    
     <PackageReference Include="Fody" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>

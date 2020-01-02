@@ -10,7 +10,7 @@ using System.Text;
 
 namespace FwelaStandards.ProjectComposition
 {
-    public class NodeObservableDictionary : ObservableDictionary<string, ProjectNodeInfo>
+    public class NodeObservableDictionary : FastObservableDictionary<string, ProjectNodeInfo>
     {
         public ProjectNodeInfo Owner { get; }
         public NodeObservableDictionary(ProjectNodeInfo owner)

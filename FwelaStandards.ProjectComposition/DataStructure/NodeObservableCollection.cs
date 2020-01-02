@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FwelaStandards.ProjectComposition
 {
-    public class NodeObservableCollection : FastObservableCollection<ProjectNodeInfo>
+    public class NodeObservableCollection : ObservableCollection<ProjectNodeInfo>
     {
         public ProjectNodeInfo Owner { get; }
         public NodeObservableCollection(ProjectNodeInfo owner)

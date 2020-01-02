@@ -1,5 +1,6 @@
 ﻿using Catel.Data;
 using System;
+using System.ComponentModel;
 
 namespace FwelaStandards.ProjectComposition
 {
@@ -11,10 +12,15 @@ namespace FwelaStandards.ProjectComposition
         }
         public IProjectPart? Parent { get; set; }
         public ProjectNodeInfo? NodeInfo { get; private set; }
+
+
+
         /// <summary>
         /// quick use for node info
         /// </summary>
         public ProjectNodeInfo NI => NodeInfo ?? throw new InvalidOperationException("Node info can't be used before initialization");
+
+        public string Name => NI.Name;
 
         public ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode, string? name)
         {
@@ -37,7 +43,10 @@ namespace FwelaStandards.ProjectComposition
             return ObjectAdapter.GetMemberValue<T>(this, propName, out var res) ? res : throw new PropertyNotRegisteredException(propName, GetType());
         }
 
-
+        public void RaiseNameChanged(AdvancedPropertyChangedEventArgs args)
+        {
+            base.RaisePropertyChanged(this, args);
+        }
     }
 
 }

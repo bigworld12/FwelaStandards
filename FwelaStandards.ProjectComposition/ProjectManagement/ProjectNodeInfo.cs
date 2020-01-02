@@ -26,6 +26,7 @@ namespace FwelaStandards.ProjectComposition
         {
             return (T)RootNode.Part;
         }
+
         public IRootProjectPart GetRootPart()
         {
             return (IRootProjectPart)RootNode.Part;
@@ -183,12 +184,12 @@ namespace FwelaStandards.ProjectComposition
             return AsDictionary[name];
         }
         public void RegisterChildNode(ProjectNodeInfo childInfo)
-        {   
+        {
             AsDictionary[childInfo.Name] = childInfo;
         }
         public void RegisterChildPart<T>(T childPart, string name, bool raisePropertyChangedOnPart = true) where T : IProjectPart
         {
-            var cNI = childPart.InitFromParent(this,name);
+            var cNI = childPart.InitFromParent(this, name);
             RegisterChildNode(cNI);
             if (raisePropertyChangedOnPart)
             {
@@ -199,7 +200,7 @@ namespace FwelaStandards.ProjectComposition
         public void RegisterListChild<T>(T childPart) where T : IProjectPart
         {
             var cNI = childPart.InitFromParent(this, AsList.Count.TransformIndex());
-            
+
             AsList.Add(cNI);
         }
         public void RegisterListChild<T>(IEnumerable<T> childrenParts) where T : IProjectPart
@@ -247,11 +248,12 @@ namespace FwelaStandards.ProjectComposition
                 case nameof(Name):
                     if (e is AdvancedPropertyChangedEventArgs adv)
                     {
-                        if (adv.IsOldValueMeaningful && adv.OldValue is string oldName)
+                        if (adv.IsOldValueMeaningful && adv.OldValue is string oldName && adv.IsNewValueMeaningful && adv.NewValue is string newName)
                         {
-                            CleanName = GetCleanName(Name);
-                            FullPath = GetFullPath(Name, false);
-                            CleanFullPath = GetFullPath(Name, true);
+                            CleanName = GetCleanName(newName);
+                            FullPath = GetFullPath(newName, false);
+                            CleanFullPath = GetFullPath(newName, true);
+                            Part.RaiseNameChanged(new AdvancedPropertyChangedEventArgs(adv.OriginalSender, Part, adv.PropertyName, oldName, newName));
                         }
                         else
                         {
@@ -343,9 +345,10 @@ namespace FwelaStandards.ProjectComposition
         {
             return WalkPathDownFrom(RootNode, fullPath);
         }
+        private static readonly char[] seps = new char[] { '.' };
         public static ProjectNodeInfo WalkPathDownFrom(ProjectNodeInfo start, string fullPath)
         {
-            var splitPath = fullPath.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            var splitPath = fullPath.Split(seps, StringSplitOptions.RemoveEmptyEntries);
             ProjectNodeInfo current = start;
             for (int i = 0; i < splitPath.Length; i++)
             {
@@ -385,14 +388,12 @@ namespace FwelaStandards.ProjectComposition
                 subProps.Add((this, toPropName));
             }
         }
-        public void RegisterAction(ProjectNodeInfo from, string fromPropName, params EventHandler[] eventHandlers)
+        public void RegisterAction(ProjectNodeInfo from, string fromPropName, EventHandler eventHandler)
         {
             var dep = from.DependencyInfo;
             var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<EventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
-            foreach (var item in eventHandlers)
-            {
-                subActions.Add(item);
-            }
+            subActions.Add(eventHandler);
+
         }
     }
 

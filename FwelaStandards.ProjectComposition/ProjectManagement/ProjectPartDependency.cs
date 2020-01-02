@@ -25,7 +25,7 @@ namespace FwelaStandards.ProjectComposition
         }
 
         public const string ItemIndexer = "Item[]";
-        public void HandlePropInDirectOrRelativeDictionary(string name,bool checkStartsWith = false)
+        public void HandlePropInDirectOrRelativeDictionary(string name, bool checkStartsWith = false)
         {
             void loop(HashSet<EventHandler> subActions, HashSet<(ProjectNodeInfo targetObj, string targetPropName)> subProps)
             {
@@ -35,10 +35,8 @@ namespace FwelaStandards.ProjectComposition
                 }
                 foreach (var item in subActions)
                 {
-                    item(From.Part, EventArgs.Empty);
+                    item(From.Part, new PropertyChangedEventArgs(name));
                 }
-
-
             }
             if (checkStartsWith)
             {
@@ -62,7 +60,7 @@ namespace FwelaStandards.ProjectComposition
             //walk the node tree, if parent has path that references current path
             if (From.Parent is ProjectNodeInfo currentParent)
             {
-                currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.CleanName}.{name}",true);
+                currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.CleanName}.{name}", true);
             }
         }
 
@@ -71,7 +69,7 @@ namespace FwelaStandards.ProjectComposition
             if (!(eOld is AdvancedPropertyChangedEventArgs e)) return;
             HandlePropInDirectOrRelativeDictionary(e.PropertyName);
         }
-        
+
         private void ChildList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -92,7 +90,7 @@ namespace FwelaStandards.ProjectComposition
 
         public ProjectNodeInfo From { get; }
         public IProjectPart Part => From.Part;
-        
+
         /// <summary>
         /// Stores 
         /// Direct : Item[], A, B, Item[].A, Item[].B

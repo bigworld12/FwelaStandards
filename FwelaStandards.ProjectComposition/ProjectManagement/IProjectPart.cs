@@ -1,4 +1,5 @@
-﻿using Catel.Data;
+﻿using Catel.Collections;
+using Catel.Data;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -20,10 +21,13 @@ namespace FwelaStandards.ProjectComposition
         void RegisterAllDeps(ProjectNodeInfo nodeInfo);
         void RegisterAllChildren(ProjectNodeInfo nodeInfo);
         IProjectPart? Parent { get; }
+        string Name { get; }
+
+        void RaiseNameChanged(AdvancedPropertyChangedEventArgs args);
     }
     public interface IRootProjectPart : IProjectPart
     {
-        IReadOnlyDictionary<string,ProjectNodeInfo> AllNodes { get; }
+        FastObservableDictionary<string,ProjectNodeInfo> AllNodes { get; }
         /// <summary>
         /// adds new node and removes the old one
         /// </summary>
