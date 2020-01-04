@@ -38,7 +38,11 @@ namespace FwelaStandards.ProjectComposition
         public NodeObservableCollection AsList { get; }
 
         public ProjectPartDependency DependencyInfo { get; }
-
+        protected override void RaisePropertyChanged(object sender, AdvancedPropertyChangedEventArgs e)
+        {
+            if (IsInitializing) return;
+            base.RaisePropertyChanged(sender, e);
+        }
         public IEnumerable<ProjectNodeInfo> AllChildren => AsDictionary.Values.Concat(AsList);
 
         public ObservableCollection<T> ChildrenToObservableCollection<T>() where T : IProjectPart
@@ -165,7 +169,12 @@ namespace FwelaStandards.ProjectComposition
             res.CollectionChanged += CopyChanged;
         }
 
-
+        private bool IsInitializing = true;
+        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+        {
+            if (IsInitializing) return;
+            base.OnPropertyChanged(e);
+        }
 
         public T GetParentPart<T>() where T : IProjectPart
         {
@@ -229,15 +238,19 @@ namespace FwelaStandards.ProjectComposition
             FullPath = GetFullPath(Name, false);
             CleanFullPath = GetFullPath(Name, true);
 
-            PropertyChanged += ProjectNodeInfo_PropertyChanged;
 
             AsDictionary = new NodeObservableDictionary(this);
             AsList = new NodeObservableCollection(this);
             DependencyInfo = new ProjectPartDependency(this);
-
-            AsList.CollectionChanged += AsList_CollectionChanged;
+            
         }
-
+        public void StartListeningToChanges()
+        {
+            PropertyChanged += ProjectNodeInfo_PropertyChanged;
+            AsList.CollectionChanged += AsList_CollectionChanged;
+            DependencyInfo.StartListeningToChanges();
+            IsInitializing = false;
+        }
 
 
         private void ProjectNodeInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)

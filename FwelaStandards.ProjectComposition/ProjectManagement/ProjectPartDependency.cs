@@ -18,12 +18,14 @@ namespace FwelaStandards.ProjectComposition
     {
         public ProjectPartDependency(ProjectNodeInfo from)
         {
-            From = from;
-            from.Part.PropertyChanged += DefaultListener; //handles direct ONLY A, B, ...            
-            //from.Children.ItemsPartPropertyChanged += Children_PartPropertyChanged; //dependency on child list Part properties Item[].A , Item[].B, ...
-            ((INotifyCollectionChanged)from.AsList).CollectionChanged += ChildList_CollectionChanged; //dependency on child list properties Item[] , Item[].A , Item[].B , ...
+            From = from;            
         }
-
+        public void StartListeningToChanges()
+        {
+            From.Part.PropertyChanged += DefaultListener; //handles direct ONLY A, B, ...            
+            //from.Children.ItemsPartPropertyChanged += Children_PartPropertyChanged; //dependency on child list Part properties Item[].A , Item[].B, ...
+            From.AsList.CollectionChanged += ChildList_CollectionChanged; //dependency on child list properties Item[] , Item[].A , Item[].B , ...
+        }
         public const string ItemIndexer = "Item[]";
         public void HandlePropInDirectOrRelativeDictionary(string name, bool checkStartsWith = false)
         {

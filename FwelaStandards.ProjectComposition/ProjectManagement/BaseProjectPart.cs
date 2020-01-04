@@ -22,29 +22,44 @@ namespace FwelaStandards.ProjectComposition
 
         public string Name => NI.Name;
 
+        protected bool IsInitializing = true;
         public ProjectNodeInfo InitFromParent(ProjectNodeInfo? parentNode, string? name)
         {
             NodeInfo = new ProjectNodeInfo(this, parentNode, name);
             Parent = parentNode?.Part;
             RegisterAllChildren(NodeInfo);
             RegisterAllDeps(NodeInfo);
+            NodeInfo.StartListeningToChanges();
+            IsInitializing = false;
             return NodeInfo;
         }
+
         public virtual void RegisterAllChildren(ProjectNodeInfo nodeInfo) { }
         public virtual void RegisterAllDeps(ProjectNodeInfo nodeInfo) { }
 
         void ICanRaisePropertyChanged.RaisePropertyChanged(string propName)
         {
+            if (IsInitializing) return;
             RaisePropertyChanged(propName);
+        }
+        protected override void RaisePropertyChanged(object sender, AdvancedPropertyChangedEventArgs e)
+        {
+            if (IsInitializing) return;
+            base.RaisePropertyChanged(sender, e);
         }
 
         public T GetDirectPropertyValue<T>(string propName) where T : class
         {
             return ObjectAdapter.GetMemberValue<T>(this, propName, out var res) ? res : throw new PropertyNotRegisteredException(propName, GetType());
         }
-
+        protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
+        {
+            if (IsInitializing) return;
+            base.OnPropertyChanged(e);
+        }
         public void RaiseNameChanged(AdvancedPropertyChangedEventArgs args)
         {
+            if (IsInitializing) return;
             base.RaisePropertyChanged(this, args);
         }
     }
