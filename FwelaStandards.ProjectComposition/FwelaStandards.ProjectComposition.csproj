@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <LangVersion>8</LangVersion>
-    <Authors>Ahmed Fwela</Authors>
-    <Description>just a group of classes that i am too lazy to rewrite, don't use these unless you know what you are doing</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageTags>fwela standards project composition</PackageTags>
-    <PackageProjectUrl>https://github.com/bigworld12/FwelaStandards</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/bigworld12/FwelaStandards</RepositoryUrl>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>8</LangVersion>
+		<Authors>Ahmed Fwela</Authors>
+		<Description>just a group of classes that i am too lazy to rewrite, don't use these unless you know what you are doing</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageTags>fwela standards project composition</PackageTags>
+		<PackageProjectUrl>https://github.com/bigworld12/FwelaStandards</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/bigworld12/FwelaStandards</RepositoryUrl>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<FileVersion>1.1.0.0</FileVersion>
+		<Version>1.1.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Catel.Core" Version="5.12.0" />
-    <PackageReference Include="Catel.Fody" Version="4.4.0-alpha0078" />
-    <PackageReference Include="Fody" Version="6.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  
+	<ItemGroup>
+		<PackageReference Include="Catel.Core" Version="5.12.0" />
+		<PackageReference Include="Catel.Fody" Version="4.3.0" PrivateAssets="all" />
+		<PackageReference Include="Fody" Version="6.0.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
 
 </Project>
