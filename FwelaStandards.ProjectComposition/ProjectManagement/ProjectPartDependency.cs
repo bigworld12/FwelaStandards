@@ -29,7 +29,7 @@ namespace FwelaStandards.ProjectComposition
         public const string ItemIndexer = "Item[]";
         public void HandlePropInDirectOrRelativeDictionary(string name, bool checkStartsWith = false)
         {
-            void loop(HashSet<EventHandler> subActions, HashSet<(ProjectNodeInfo targetObj, string targetPropName)> subProps)
+            void loop(HashSet<PropertyChangedEventHandler> subActions, HashSet<(ProjectNodeInfo targetObj, string targetPropName)> subProps)
             {
                 foreach (var (nodeInfo, PartPropName) in subProps)
                 {
@@ -53,7 +53,7 @@ namespace FwelaStandards.ProjectComposition
             }
             else
             {
-                if (DirectOrRelativeDeps.TryGetValue(name, out (HashSet<EventHandler> Actions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> Props) sub))
+                if (DirectOrRelativeDeps.TryGetValue(name, out (HashSet<PropertyChangedEventHandler> Actions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> Props) sub))
                 {
                     loop(sub.Actions, sub.Props);
                 }
@@ -98,8 +98,8 @@ namespace FwelaStandards.ProjectComposition
         /// Direct : Item[], A, B, Item[].A, Item[].B
         /// Relative : A.B.C, A.Item[].B, Item[].A.B
         /// </summary>
-        public ConcurrentDictionary<string, (HashSet<EventHandler> subActions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> subProps)> DirectOrRelativeDeps { get; }
-            = new ConcurrentDictionary<string, (HashSet<EventHandler> subActions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> subProps)>();
+        public ConcurrentDictionary<string, (HashSet<PropertyChangedEventHandler> subActions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> subProps)> DirectOrRelativeDeps { get; }
+            = new ConcurrentDictionary<string, (HashSet<PropertyChangedEventHandler> subActions, HashSet<(ProjectNodeInfo nodeInfo, string PartPropName)> subProps)>();
 
 
         //public ConcurrentDictionary<string, ObservableCollection<ErrorLog>> Errors { get; } = new ConcurrentDictionary<string, ObservableCollection<ErrorLog>>();

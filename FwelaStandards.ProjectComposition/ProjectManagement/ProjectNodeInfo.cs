@@ -385,7 +385,7 @@ namespace FwelaStandards.ProjectComposition
         public void RegisterDependency(ProjectNodeInfo from, string fromPropName, params string[] toPropNames)
         {
             var dep = from.DependencyInfo;
-            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<EventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
+            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
 
             foreach (var item in toPropNames)
             {
@@ -397,14 +397,14 @@ namespace FwelaStandards.ProjectComposition
             var dep = from.DependencyInfo;
             foreach (var fromPropName in fromPropNames)
             {
-                var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<EventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
+                var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
                 subProps.Add((this, toPropName));
             }
         }
-        public void RegisterAction(ProjectNodeInfo from, string fromPropName, EventHandler eventHandler)
+        public void RegisterAction(ProjectNodeInfo from, string fromPropName, PropertyChangedEventHandler eventHandler)
         {
             var dep = from.DependencyInfo;
-            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<EventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
+            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
             subActions.Add(eventHandler);
 
         }

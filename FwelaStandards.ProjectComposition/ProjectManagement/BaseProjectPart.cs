@@ -48,7 +48,7 @@ namespace FwelaStandards.ProjectComposition
             base.RaisePropertyChanged(sender, e);
         }
 
-        public T GetDirectPropertyValue<T>(string propName) where T : class
+        public T GetDirectPropertyValue<T>(string propName)
         {
             return ObjectAdapter.GetMemberValue<T>(this, propName, out var res) ? res : throw new PropertyNotRegisteredException(propName, GetType());
         }
