@@ -380,6 +380,11 @@ namespace FwelaStandards.ProjectComposition
         {
             RegisterDependency(from, $"Item[].{itemPropName}".TrimEnd('.'), toPropNames);
         }
+        
+        public void RegisterListItemAction(string itemPropName, PropertyChangedEventHandler act)
+        {
+            RegisterAction($"Item[].{itemPropName}".TrimEnd('.'), act);
+        }
 
 
         public void RegisterDependency(ProjectNodeInfo from, string fromPropName, params string[] toPropNames)
@@ -401,12 +406,11 @@ namespace FwelaStandards.ProjectComposition
                 subProps.Add((this, toPropName));
             }
         }
-        public void RegisterAction(ProjectNodeInfo from, string fromPropName, PropertyChangedEventHandler eventHandler)
+        public void RegisterAction(string fromPropName, PropertyChangedEventHandler eventHandler)
         {
-            var dep = from.DependencyInfo;
+            var dep = DependencyInfo;
             var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
             subActions.Add(eventHandler);
-
         }
     }
 
