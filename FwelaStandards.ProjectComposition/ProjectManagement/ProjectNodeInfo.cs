@@ -242,7 +242,7 @@ namespace FwelaStandards.ProjectComposition
             AsDictionary = new NodeObservableDictionary(this);
             AsList = new NodeObservableCollection(this);
             DependencyInfo = new ProjectPartDependency(this);
-            
+
         }
         public void StartListeningToChanges()
         {
@@ -380,7 +380,7 @@ namespace FwelaStandards.ProjectComposition
         {
             RegisterDependency(from, $"Item[].{itemPropName}".TrimEnd('.'), toPropNames);
         }
-        
+
         public void RegisterListItemAction(string itemPropName, PropertyChangedEventHandler act)
         {
             RegisterAction($"Item[].{itemPropName}".TrimEnd('.'), act);
@@ -390,11 +390,11 @@ namespace FwelaStandards.ProjectComposition
         public void RegisterDependency(ProjectNodeInfo from, string fromPropName, params string[] toPropNames)
         {
             var dep = from.DependencyInfo;
-            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
+            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop,Func<string,bool>? shouldRaise)>()));
 
             foreach (var item in toPropNames)
             {
-                subProps.Add((this, item));
+                subProps.Add((this, item, null));
             }
         }
         public void RegisterMultiFromDependency(ProjectNodeInfo from, string toPropName, params string[] fromPropNames)
@@ -402,14 +402,14 @@ namespace FwelaStandards.ProjectComposition
             var dep = from.DependencyInfo;
             foreach (var fromPropName in fromPropNames)
             {
-                var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
-                subProps.Add((this, toPropName));
+                var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop, Func<string, bool>? shouldRaise)>()));
+                subProps.Add((this, toPropName,null));
             }
         }
         public void RegisterAction(string fromPropName, PropertyChangedEventHandler eventHandler)
         {
             var dep = DependencyInfo;
-            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop)>()));
+            var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop, Func<string, bool>? shouldRaise)>()));
             subActions.Add(eventHandler);
         }
     }
