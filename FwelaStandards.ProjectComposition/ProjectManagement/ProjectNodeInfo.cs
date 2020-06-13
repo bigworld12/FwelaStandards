@@ -386,7 +386,10 @@ namespace FwelaStandards.ProjectComposition
             RegisterAction($"Item[].{itemPropName}".TrimEnd('.'), act);
         }
 
-
+        public void RegisterSelfDependency(string fromPropName, params string[] toPropNames)
+        {
+            RegisterDependency(this, fromPropName, toPropNames);
+        }
         public void RegisterDependency(ProjectNodeInfo from, string fromPropName, params string[] toPropNames)
         {
             var dep = from.DependencyInfo;
