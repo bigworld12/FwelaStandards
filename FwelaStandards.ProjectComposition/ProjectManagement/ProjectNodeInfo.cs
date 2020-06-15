@@ -415,6 +415,15 @@ namespace FwelaStandards.ProjectComposition
             var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop, Func<string, bool>? shouldRaise)>()));
             subActions.Add(eventHandler);
         }
+        public void RegisterMultiAction(PropertyChangedEventHandler eventHandler, params string[] fromPropNames)
+        {
+            var dep = DependencyInfo;
+            foreach (var fromPropName in fromPropNames)
+            {
+                var (subActions, subProps) = dep.DirectOrRelativeDeps.GetOrAdd(fromPropName, (path) => (new HashSet<PropertyChangedEventHandler>(), new HashSet<(ProjectNodeInfo, string prop, Func<string, bool>? shouldRaise)>()));
+                subActions.Add(eventHandler);
+            }           
+        }
     }
 
 }

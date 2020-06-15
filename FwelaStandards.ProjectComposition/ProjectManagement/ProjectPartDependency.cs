@@ -89,7 +89,7 @@ namespace FwelaStandards.ProjectComposition
                 case NotifyCollectionChangedAction.Reset:
                 case NotifyCollectionChangedAction.Remove:
                     //Handle anything that starts with Item[]
-                    HandlePropInDirectOrRelativeDictionary(ItemIndexer);
+                    HandlePropInDirectOrRelativeDictionary(ItemIndexer,true);
                     break;
                 case NotifyCollectionChangedAction.Move:
                 default:
