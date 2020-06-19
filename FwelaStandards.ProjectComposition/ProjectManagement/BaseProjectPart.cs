@@ -1,5 +1,6 @@
 ﻿using Catel.Data;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace FwelaStandards.ProjectComposition
@@ -29,6 +30,10 @@ namespace FwelaStandards.ProjectComposition
             Parent = parentNode?.Part;
             RegisterAllChildren(NodeInfo);
             RegisterAllDeps(NodeInfo);
+            foreach (var depHandler in extraDeps)
+            {
+                depHandler(NodeInfo);
+            }
             NodeInfo.StartListeningToChanges();
             IsInitializing = false;
             return NodeInfo;
@@ -36,7 +41,12 @@ namespace FwelaStandards.ProjectComposition
 
         public virtual void RegisterAllChildren(ProjectNodeInfo nodeInfo) { }
         public virtual void RegisterAllDeps(ProjectNodeInfo nodeInfo) { }
-
+        public void RegisterExtraDependencies(Action<ProjectNodeInfo> action)
+        {
+            if (!IsInitializing) return;
+            extraDeps.Add(action);
+        }
+        private HashSet<Action<ProjectNodeInfo>> extraDeps = new HashSet<Action<ProjectNodeInfo>>();
         void ICanRaisePropertyChanged.RaisePropertyChanged(string propName)
         {
             if (IsInitializing) return;
@@ -49,9 +59,10 @@ namespace FwelaStandards.ProjectComposition
         }
 
         public T GetDirectPropertyValue<T>(string propName)
-        {
+        {   
             return ObjectAdapter.GetMemberValue<T>(this, propName, out var res) ? res : throw new PropertyNotRegisteredException(propName, GetType());
         }
+
         protected override void OnPropertyChanged(AdvancedPropertyChangedEventArgs e)
         {
             if (IsInitializing) return;
