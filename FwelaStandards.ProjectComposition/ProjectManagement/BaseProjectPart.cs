@@ -34,6 +34,7 @@ namespace FwelaStandards.ProjectComposition
             {
                 depHandler(NodeInfo);
             }
+            extraDeps.Clear();
             NodeInfo.StartListeningToChanges();
             IsInitializing = false;
             return NodeInfo;
@@ -43,10 +44,17 @@ namespace FwelaStandards.ProjectComposition
         public virtual void RegisterAllDeps(ProjectNodeInfo nodeInfo) { }
         public void RegisterExtraDependencies(Action<ProjectNodeInfo> action)
         {
-            if (!IsInitializing) return;
-            extraDeps.Add(action);
+            if (NodeInfo == null)
+            {
+                extraDeps.Add(action);
+            }
+            else
+            {
+                action(NodeInfo);
+            }
         }
-        private HashSet<Action<ProjectNodeInfo>> extraDeps = new HashSet<Action<ProjectNodeInfo>>();
+        
+        private HashSet<Action<ProjectNodeInfo>> extraDeps { get; } = new HashSet<Action<ProjectNodeInfo>>();
         void ICanRaisePropertyChanged.RaisePropertyChanged(string propName)
         {
             if (IsInitializing) return;

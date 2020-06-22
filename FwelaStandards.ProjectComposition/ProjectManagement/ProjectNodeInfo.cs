@@ -188,6 +188,10 @@ namespace FwelaStandards.ProjectComposition
         {
             return (T)AsDictionary[name].Part;
         }
+        public T GetListChildPart<T>(int index) where T : IProjectPart
+        {
+            return (T)AsList[index].Part;
+        }
         public ProjectNodeInfo GetChild(string name)
         {
             return AsDictionary[name];

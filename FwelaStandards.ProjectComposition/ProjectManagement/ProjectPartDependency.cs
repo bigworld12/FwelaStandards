@@ -71,6 +71,7 @@ namespace FwelaStandards.ProjectComposition
             if (From.Parent is ProjectNodeInfo currentParent)
             {
                 currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.CleanName}.{name}", true);
+                currentParent.DependencyInfo.HandlePropInDirectOrRelativeDictionary($"{From.Name}.{name}", true);
             }
         }
 
